@@ -15,7 +15,7 @@ public class UserController {
 
  @GetMapping("hello")
  public String[] hello() {
-     return new String[]{"Hello", "User",  "Service"};
+     return new String[]{"Hello", "User",  "Service", "Updated"};
  }
 }
 
