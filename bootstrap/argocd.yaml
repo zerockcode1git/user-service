@@ -1,0 +1,30 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+ name: user-service
+ namespace: argocd
+ finalizers:
+   - resources-finalizer.argocd.argoproj.io
+spec:
+ project: default
+ source:
+   repoURL: https://github.com/zerockcode1git/user-service.git
+   targetRevision: main
+   path: k8s
+ destination:
+   server: https://kubernetes.default.svc
+   namespace: user-service
+
+ syncPolicy:
+   automated:
+     prune: true       # 삭제된 리소스 자동 정리
+     selfHeal: true    # 클러스터 상태 drift 시 자동 복구
+   syncOptions:
+     - CreateNamespace=true    # product-service 네임스페이스 없으면 자동 생성
+     - ApplyOutOfSyncOnly=true # 변경된 리소스만 적용
+   retry:
+     limit: 3
+     backoff:
+       duration: 10s
+       factor: 2
+       maxDuration: 3m
