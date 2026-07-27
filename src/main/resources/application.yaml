@@ -6,4 +6,7 @@ spring:
 
 server: 
   port: 8082
-  
+
+
+app:
+ title: ${TEST_SECRET} # 💡 ExternalSecret를 통해 SSM에서 가져온 값이 들어옵니다.

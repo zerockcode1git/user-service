@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 
 
@@ -13,9 +14,15 @@ import org.springframework.web.bind.annotation.GetMapping;
 @RequiredArgsConstructor
 public class UserController {
 
- @GetMapping("hello")
- public String[] hello() {
+  @Value("${app.title}")
+  private String title;
+
+  @GetMapping("hello")
+  public String[] hello() {
+
+    log.info("title: " + title);
+
      return new String[]{"Hello", "User",  "Service", "Updated"};
- }
+  }
 }
 
