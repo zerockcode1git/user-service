@@ -29,7 +29,7 @@ spec:
            - containerPort: 8082
          envFrom:
            - configMapRef:
-               name: product-service-config
+               name: user-service-config
          resources:
            requests:
              cpu: "100m"
