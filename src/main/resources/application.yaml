@@ -4,6 +4,42 @@ spring:
   application:
     name: user-service
 
+  ssl:
+   bundle:
+     jks:
+       kafka-ssl-bundle:
+         key:
+           alias: "1"
+           password: "${KAFKA_KEY_PASSWORD}"
+         keystore:
+           # data:... 대신 base64: 접두사 사용
+           location: "base64:${KAFKA_KEYSTORE}"
+           password: "${KAFKA_KEY_PASSWORD}"
+           type: "JKS"
+         truststore:
+           location: "base64:${KAFKA_TRUSTSTORE}"
+           password: "${KAFKA_TRUST_PASSWORD}"
+           type: "JKS"
+
+  kafka:
+   bootstrap-servers: "${KAFKA_BOOTSTRAP_SERVERS}"
+   properties:
+     "[security.protocol]": SSL
+   ssl:
+     # 위에 정의한 ssl.bundle.jks.kafka-ssl-bundle을 이름으로 직접 매핑합니다.
+     bundle: "kafka-ssl-bundle"
+  
+   consumer:
+     group-id: sample-group
+     auto-offset-reset: earliest
+     key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+     value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+  
+   producer:
+     key-serializer: org.apache.kafka.common.serialization.StringSerializer
+     value-serializer: org.apache.kafka.common.serialization.StringSerializer
+
+
 server: 
   port: 8082
 
