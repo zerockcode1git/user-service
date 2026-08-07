@@ -2,6 +2,7 @@ package org.zerock.user_service.controller;
 
 import org.springframework.web.bind.annotation.RestController;
 import org.zerock.user_service.dto.UserDTO;
+import org.zerock.user_service.redis.repository.RefreshTokenRepository;
 import org.zerock.user_service.service.UserManageService;
 import org.zerock.user_service.util.JWTProvider;
 
@@ -23,6 +24,8 @@ public class UserController {
 
   private final UserManageService manageService;
   private final JWTProvider jwtProvider;
+  private final RefreshTokenRepository refreshTokenRepository;
+
 
 
   @Value("${app.title}")
@@ -45,6 +48,8 @@ public class UserController {
    String accessToken = jwtProvider.generateToken(userDTO, 10);
    //RT 60min
    String refreshToken = jwtProvider.generateToken(userDTO, 60);
+
+   refreshTokenRepository.save(userDTO.getUserId(), refreshToken);
 
    return Map.of("accessToken", accessToken, "refreshToken", refreshToken);
  }
