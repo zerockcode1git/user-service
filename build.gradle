@@ -32,6 +32,15 @@ dependencies {
   testImplementation 'org.springframework.boot:spring-boot-starter-kafka-test'
   implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 
+  implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	testImplementation 'org.springframework.boot:spring-boot-starter-data-jpa-test'
+	implementation 'org.postgresql:postgresql'
+	implementation 'org.springframework.security:spring-security-crypto'
+
+	implementation 'io.jsonwebtoken:jjwt-api:0.12.6'
+	implementation 'io.jsonwebtoken:jjwt-impl:0.12.6'
+	implementation 'io.jsonwebtoken:jjwt-jackson:0.12.6'
+
 }
 
 tasks.named('test') {
