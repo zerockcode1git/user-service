@@ -69,11 +69,14 @@ public ResponseEntity<?> refresh(@RequestBody RefreshTokenDTO tokenDTO) throws R
 
     rt = tokenDTO.getRt();
 
-    // JWTProvider의 isExpired()로 RT 만료 여부 직접 검증
-    boolean isExpired = jwtProvider.isExpired(rt);
-    
-    if (isExpired) {
-       throw new RefreshException("Refresh Token이 만료되었습니다. 다시 로그인해주세요.");
+    try{
+      // JWTProvider의 isExpired()로 RT 만료 여부 직접 검증
+      boolean isExpired = jwtProvider.isExpired(rt);
+      if(isExpired) {
+        throw new RefreshException("Refresh Token이 만료되었습니다. 다시 로그인해주세요.");
+      }
+    }catch (Exception e) {
+      throw new RefreshException("Refresh Token이 유효하지 않습니다. 다시 로그인해주세요.");
     }
 
     // 만료되지 않은 RT에서 사용자 정보(Claims) 추출
