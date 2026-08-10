@@ -33,7 +33,7 @@ public class UserControllerAdvice {
    log.error("refresh failed: {}", e.getMessage());
 
 
-   return Map.of("error", "Token Refresh Failed");
+   return Map.of("error", e.getMessage());
  }
 
 }
