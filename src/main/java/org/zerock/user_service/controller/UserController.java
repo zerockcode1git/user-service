@@ -3,6 +3,7 @@ package org.zerock.user_service.controller;
 import org.springframework.web.bind.annotation.RestController;
 import org.zerock.user_service.dto.RefreshTokenDTO;
 import org.zerock.user_service.dto.UserDTO;
+import org.zerock.user_service.exception.RefreshException;
 import org.zerock.user_service.redis.repository.RefreshTokenRepository;
 import org.zerock.user_service.service.UserManageService;
 import org.zerock.user_service.util.JWTProvider;
@@ -62,32 +63,38 @@ public class UserController {
  }
 
 @PostMapping("refresh")
-public ResponseEntity<?> refresh(@RequestBody RefreshTokenDTO tokenDTO) {
+public ResponseEntity<?> refresh(@RequestBody RefreshTokenDTO tokenDTO) throws RefreshException {
 
-    String rt = tokenDTO.getRt();
+    String rt = null;
+
+    rt = tokenDTO.getRt();
 
     // JWTProvider의 isExpired()로 RT 만료 여부 직접 검증
-    if (jwtProvider.isExpired(rt)) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body("Refresh Token이 만료되었습니다. 다시 로그인해주세요.");
+    boolean isExpired = jwtProvider.isExpired(rt);
+    
+    if (isExpired) {
+       throw new RefreshException("Refresh Token이 만료되었습니다. 다시 로그인해주세요.");
     }
 
     // 만료되지 않은 RT에서 사용자 정보(Claims) 추출
-    Claims claims = jwtProvider.getClaims(rt);
+    Claims claims = null;
+    
+    try {
+        claims = jwtProvider.getClaims(rt);
+    } catch (JwtException e) {
+        throw new RefreshException("Refresh Token이 유효하지 않습니다. 다시 로그인해주세요.");
+    }
+
     String userId = claims.getSubject();
     String rolename = (String) claims.get("rolename");
     String username = claims.get("username", String.class);
-
+    
+      
     // Redis에서 저장된 RT 조회 (Optional)
     Optional<String> savedRTResult = refreshTokenRepository.find(userId);
 
-    // Redis에서 만료되서 삭제되었거나 문제가 있어서 제거된 경우 
-    if (savedRTResult.isEmpty()) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body("저장된 세션이 존재하지 않습니다.");
-    }
-
-    String savedRT = savedRTResult.get();
+    String savedRT = savedRTResult.orElseThrow(
+      () -> new RefreshException("토큰 재사용(탈취 위험)이 감지되었습니다. 보안 조치로 세션이 종료됩니다."));
 
     // 문제가 있는 상황 - 외부에서 갱신된 RT를 탈취한 공격자가 이전 RT로 요청을 보내는 경우
     if (!savedRT.equals(rt)) {
@@ -95,8 +102,7 @@ public ResponseEntity<?> refresh(@RequestBody RefreshTokenDTO tokenDTO) {
         // 정당한 사용자와 공격자 모두의 세션을 강제 종료하여 피해 차단
         refreshTokenRepository.delete(userId);
 
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body("토큰 재사용(탈취 위험)이 감지되었습니다. 보안 조치로 세션이 종료됩니다.");
+        throw new RefreshException("Refresh Token이 유효하지 않습니다. 다시 로그인해주세요.");
     }
 
     // 정상 RTR 처리: 새로운 AT & RT 생성

@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.zerock.user_service.exception.LoginException;
+import org.zerock.user_service.exception.RefreshException;
 
 import lombok.extern.log4j.Log4j2;
 
@@ -23,4 +24,16 @@ public class UserControllerAdvice {
    log.error("login failed: ", e.getMessage());
      return Map.of("error", "Login failed: check your credentials");
  }
+
+ @ExceptionHandler(RefreshException.class)
+ @ResponseStatus(HttpStatus.UNAUTHORIZED)
+ public Map<String, String> handleRefreshException(RefreshException e) {
+
+
+   log.error("refresh failed: {}", e.getMessage());
+
+
+   return Map.of("error", "Token Refresh Failed");
+ }
+
 }

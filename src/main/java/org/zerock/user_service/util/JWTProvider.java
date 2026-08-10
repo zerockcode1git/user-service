@@ -45,15 +45,12 @@ public String generateToken(UserDTO dto, int minutes) {
  }
 
  public Claims getClaims(String token) {
-   try {
-     return Jwts.parser()
-       .verifyWith(secretKey)
-       .build()
-       .parseSignedClaims(token)
-       .getPayload();
-   } catch (ExpiredJwtException e) {
-     return e.getClaims();
-   }
+
+    return Jwts.parser()
+      .verifyWith(secretKey)
+      .build()
+      .parseSignedClaims(token)
+      .getPayload();
  }
 
 
