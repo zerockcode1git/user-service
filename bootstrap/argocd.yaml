@@ -28,3 +28,9 @@ spec:
        duration: 10s
        factor: 2
        maxDuration: 3m
+ ignoreDifferences:
+   - group: apps
+     kind: Deployment
+     jsonPointers:
+     # Reloader가 주입하는 어노테이션 변경만 ArgoCD가 무시하도록 설정
+     - /spec/template/metadata/annotations/reloader.stakater.com~1last-reloaded
