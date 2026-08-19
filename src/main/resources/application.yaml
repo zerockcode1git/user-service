@@ -4,72 +4,10 @@ spring:
   application:
     name: user-service
 
-  datasource:
-    url: ${DB_URL}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
-    driver-class-name: org.postgresql.Driver
-    hikari:
-      minimum-idle: 1
-      maximum-pool-size: 2
-
-
-  jpa:
-    hibernate:
-      ddl-auto: update
-    show-sql: true
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
-        '[format_sql]': true
-
-  ssl:
-   bundle:
-     jks:
-       kafka-ssl-bundle:
-         key:
-           alias: "1"
-           password: "${KAFKA_KEY_PASSWORD}"
-         keystore:
-           # data:... 대신 base64: 접두사 사용
-           location: "base64:${KAFKA_KEYSTORE}"
-           password: "${KAFKA_KEY_PASSWORD}"
-           type: "JKS"
-         truststore:
-           location: "base64:${KAFKA_TRUSTSTORE}"
-           password: "${KAFKA_TRUST_PASSWORD}"
-           type: "JKS"
-
-  kafka:
-   bootstrap-servers: "${KAFKA_BOOTSTRAP_SERVERS}"
-   properties:
-     "[security.protocol]": SSL
-   ssl:
-     # 위에 정의한 ssl.bundle.jks.kafka-ssl-bundle을 이름으로 직접 매핑합니다.
-     bundle: "kafka-ssl-bundle"
-  
-   consumer:
-     group-id: sample-group
-     auto-offset-reset: earliest
-     key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-     value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-  
-   producer:
-     key-serializer: org.apache.kafka.common.serialization.StringSerializer
-     value-serializer: org.apache.kafka.common.serialization.StringSerializer
-
-  data:
-   redis:
-     host: ${REDIS_HOST}
-     port: ${REDIS_PORT}
-     password: ${REDIS_PASSWORD}
 
 server: 
   port: 8082
 
 
-app:
- title: ${TEST_SECRET} # 💡 ExternalSecret를 통해 SSM에서 가져온 값이 들어옵니다.
 
-jwt:
-  secret: ${JWT_SECRET} # 💡 ExternalSecret를 통해 SSM에서 가져온 값이 들어옵니다 .
+
