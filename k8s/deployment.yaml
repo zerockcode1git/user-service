@@ -25,7 +25,7 @@ spec:
     spec:
       containers:
         - name: user-service
-          image: zerockcode1/user-service:sha-0658111
+          image: zerockcode1/user-service:sha-13830a4
           imagePullPolicy: Always
           ports:
             - containerPort: 8082
